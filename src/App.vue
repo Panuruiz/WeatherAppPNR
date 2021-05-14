@@ -1,23 +1,34 @@
 <template>
   <div class="main">
-    <Modal v-if="modalOpen" v-on:close-modal="toggleModal" v-bind:APIkey="APIkey" />
-    <Navigation 
-      v-on:add-city="toggleModal" 
-      v-on:edit-city="toggleEdit" 
-      :addCityActive="addCityActive" 
-      :isDay="isDay" 
-      :isNight="isNight" 
-    />
-    <router-view 
-      :isDay="isDay" 
-      :isNight="isNight"
-      v-bind:cities="cities" 
-      v-bind:edit="edit" 
-      v-bind:APIkey="APIkey" 
-      v-on:is-day="dayTime" 
-      v-on:is-night="nightTime" 
-      v-on:resetDays="resetDays"
-    />
+    <div v-if="isLoading" class="loading">
+      <span></span>
+    </div>
+    <div v-else class="app">
+      <Modal
+        v-if="modalOpen"
+        v-bind:APIkey="APIkey"
+        v-on:close-modal="toggleModal"
+        :cities="cities"
+      />
+      <Navigation 
+        v-on:add-city="toggleModal" 
+        v-on:edit-city="toggleEdit" 
+        :addCityActive="addCityActive" 
+        :isDay="isDay" 
+        :isNight="isNight" 
+      />
+      <router-view 
+        :isDay="isDay" 
+        :isNight="isNight"
+        v-bind:cities="cities" 
+        v-bind:edit="edit" 
+        v-bind:APIkey="APIkey" 
+        v-on:is-day="dayTime" 
+        v-on:is-night="nightTime" 
+        v-on:resetDays="resetDays"
+        v-on:add-city="toggleModal"
+      />
+    </div>
   </div>
 </template>
 
@@ -41,6 +52,7 @@ export default {
       modalOpen: null,
       edit: null,
       addCityActive: null,
+      isLoading: true,
     };
   },
   created() {
@@ -50,21 +62,22 @@ export default {
   methods: {
     getCityWeather() {
       let firebaseDB = db.collection('cities');
-      console.log(firebaseDB);
       firebaseDB.onSnapshot(snap => {
+        if (snap.docs.length === 0) {
+          this.isLoading = false;
+        }
         snap.docChanges().forEach(async(doc) => {
-          console.log(doc.type);
           if (doc.type === "added" && !doc.doc.Nd) {
             try {
               const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${doc.doc.data().city}&units=metric&appid=${this.APIkey}`
         );
         const data = response.data;
-        console.log(doc.doc.data().city)
         firebaseDB.doc(doc.doc.id).update({
           currentWeather: data,
         }).then(() => {
           this.cities.push(doc.doc.data());
+          this.isLoading = false;
         })
             } catch (err) {
               console.log(err);
@@ -100,6 +113,7 @@ export default {
       this.isDay = false;
       this.isNight = false;
     },
+    
   },
   watch: {
     $route() {
@@ -131,5 +145,27 @@ export default {
   height: 100vh;
   max-width: 1024px;
   margin: 0 auto;
+}
+.loading {
+    @keyframes spin {
+        to {
+            transform: rotateZ(360deg);
+        }
+    }
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    span {
+        display: block;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+        border: 2px solid transparent;
+        border-top-color: #142a5f;
+        border-radius: 50%;
+        animation: spin ease 1000ms infinite;
+    }
 }
 </style>

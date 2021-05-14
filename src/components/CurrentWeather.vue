@@ -3,6 +3,7 @@
       <div class="container">
           <div class="weather-info">
                 <span class="city">{{this.currentWeather.name}}</span>
+                <!--<span class="current-selected-city-time">{{this.}}</span>-->
                 <span class="current-temperature">{{Math.round(this.currentWeather.main.temp)}}</span>
 
             <div class="high-low-temperatures">
@@ -29,7 +30,10 @@
 <script>
 export default {
     name: "CurrentWeather",
-    props: ["isDay", "isNight", "currentWeather"],
+    props: ["isDay", "isNight", "currentWeather", "currentTime"],
+    created() {
+        console.log(this.currentTime)
+    },
 };
 </script>
 

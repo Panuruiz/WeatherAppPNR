@@ -1,10 +1,17 @@
 <template>
   <div @click="goToWeather" class="city">
-      <i v-if="edit" @click="removeCity" class="far fa-trash-alt edit" ref="edit"></i>
+      <i
+        v-if="edit"
+        @click="removeCity"
+        class="far fa-trash-alt edit"
+        ref="edit"
+      ></i>
       <span>{{this.city.city}}</span>
       <div class="weather">
           <span>{{Math.round(this.city.currentWeather.main.temp) }}&deg;</span>
-          <img :src="require(`../../public/conditions/${this.city.currentWeather.weather[0].icon}.svg`)" alt="">
+          <img
+            :src="require(`../../public/conditions/${this.city.currentWeather.weather[0].icon}.svg`)"
+            alt="">
       </div>
       <div class="video">
           <video 
@@ -65,7 +72,7 @@ export default {
         border-radius: 0 15px 0 0;
         border: 10px solid rgb(77, 77, 77);
         background-color: rgb(77, 77, 77);
-        z-index: 1;
+        z-index: 6;
         font-size: 20px;
         position: absolute;
         bottom: 0;

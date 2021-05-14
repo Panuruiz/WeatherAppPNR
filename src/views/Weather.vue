@@ -9,7 +9,11 @@
                 :isDay="isDay"
                 :isNight="isNight"
                 :currentWeather="currentWeather"
+                :currentTime="currentTime"
               />
+              <HourlyWeather :forecast="forecast" />
+              <WeeklyForecast :forecast="forecast" />
+              <AdditionalInfo :currentWeather="currentWeather" />
           </div>
       </div>
   </div>
@@ -19,11 +23,17 @@
 import axios from 'axios';
 import db from '../firebase/firebaseinit';
 import CurrentWeather from "../components/CurrentWeather";
+import HourlyWeather from "../components/HourlyWeather";
+import WeeklyForecast from "../components/WeeklyForecast";
+import AdditionalInfo from "../components/AdditionalInfo";
 export default {
     name: "Weather",
     props: ["APIkey", "isDay", "isNight"],
     components: {
         CurrentWeather,
+        HourlyWeather,
+        WeeklyForecast,
+        AdditionalInfo,
     },
     data() {
         return {
@@ -44,10 +54,13 @@ export default {
             db.collection('cities').where('city', '==', `${this.$route.params.city}`).get().then((docs) => {
                 docs.forEach(doc => {
                     this.currentWeather = doc.data().currentWeather;
+        
                     axios.get(
                         `https://api.openweathermap.org/data/2.5/onecall?lat=${doc.data().currentWeather.coord.lat}&lon=${doc.data().currentWeather.coord.lon}&exclude=current,minutley,alerts&units=metric&appid=${this.APIkey}`
                     ).then(res => {
                         this.forecast = res.data;
+                    }).then(() => {
+                        console.log(this.currentWeather.dt)
                     }).then(() => {
                         this.loading = false;
                         this.getCurrentTime();
@@ -55,6 +68,7 @@ export default {
                 });
             });
         },
+        
         getCurrentTime() {
             const dateObject = new Date();
             this.currentTime = dateObject.getHours();
@@ -71,28 +85,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.loading {
-    @keyframes spin {
-        to {
-            transform: rotateZ(360deg);
-        }
-    }
-    display: flex;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    span {
-        display: block;
-        width: 60px;
-        height: 60px;
-        margin: 0 auto;
-        border: 2px solid transparent;
-        border-top-color: #142a5f;
-        border-radius: 50%;
-        animation: spin ease 1000ms infinite;
-    }
-}
+
 .weather {
     transition: 500ms ease;
     overflow: scroll;

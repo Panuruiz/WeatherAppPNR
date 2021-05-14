@@ -16,9 +16,7 @@
               <i class="fas fa-arrow-left"></i>
           </router-link>
           <span>
-              {{ new Date().toLocaleString("en-us", { weekday: "short" }) }},
-              {{ new Date().toLocaleString("en-us", { month: "short" }) }},
-              {{ new Date().toLocaleString("en-us", { day: "2-digit" }) }}
+              {{ new Date().toLocaleString("en-us", {weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", hour12:"false"}) }}
           </span>
           <span>&deg; C</span>
       </nav>
@@ -29,7 +27,10 @@
 <script>
 export default {
     name: "Navigation",
-    props: ["addCityActive", "isDay", "isNight"],
+    props: ["addCityActive", "isDay", "isNight", "time"],
+    created() {
+        /*console.log(new Date(this.time.dt * 1000).toLocaleString("en-US", { hour: "numeric" }));*/
+    },
     methods: {
         addCity() {
             this.$emit('add-city');

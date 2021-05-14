@@ -59,6 +59,7 @@ export default {
     z-index: 101;
     background: rgba($color: black, $alpha: 0.5);
     position: fixed;
+    max-width: 1024px;
     width: 100%;
     height: 100%;
     display: flex;

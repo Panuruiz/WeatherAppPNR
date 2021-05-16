@@ -45,6 +45,8 @@ export default {
                 });
             }).then(() => {
                 db.collection('cities').doc(this.id).delete();
+            }).then(() => {
+                location.reload();
             });
         },
         goToWeather(e) {
